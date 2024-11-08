@@ -11,5 +11,5 @@ inputs:
     required: true
     description: "Linear API key"
 runs:
-  using: 'node20',
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"

@@ -76,9 +76,9 @@ export async function addLabelToTicket(client: LinearClient, {
   if (!ticketIdMatch) {
     throw new Error(`Could not extract ticket ID from branch name: ${branchName}`);
   }
-
+  
   console.log(`Branch name: ${branchName}`);
-  const ticketId = ticketIdMatch[1].toUpperCase();
+  const ticketId = ticketIdMatch[0].toUpperCase();
   const labelNames = commaSeparatedLabelNames.split(",");
   await addLabelToTicket(client, { ticketId, labelNames });
 })();

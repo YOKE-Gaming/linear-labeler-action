@@ -17,7 +17,7 @@ COPY src ./src
 # Install ts-node globally
 RUN npm install -g ts-node typescript
 
-RUN ls -l /app
+RUN ls -l /app/src
 
 # Set the entry point
 ENTRYPOINT ["ts-node", "src/index.ts"]

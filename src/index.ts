@@ -1,5 +1,5 @@
 import { LinearClient } from "@linear/sdk";
-
+import * as core from "@actions/core";
 export async function getLabels(client: LinearClient, labelNames: string[]) {
   try {
     const labels = await client.issueLabels({
@@ -62,8 +62,10 @@ export async function addLabelToTicket(client: LinearClient, {
 }
 
 (async () => {
-  const args = process.argv.slice(2);
-  const [linearApiKey, branchName, commaSeparatedLabelNames] = args;
+  const linearApiKey = core.getInput("linearApiKey");
+  const branchName = core.getInput("branchName");
+  const commaSeparatedLabelNames = core.getInput("labelNames");
+  
   if (!linearApiKey || !branchName || !commaSeparatedLabelNames) {
     throw new Error("Linear API key, branch name, and label names are required");
   }

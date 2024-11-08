@@ -11,9 +11,5 @@ inputs:
     required: true
     description: "Linear API key"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.linearApiKey }}
-    - ${{ inputs.branchName }}
-    - ${{ inputs.labelNames }}
+  using: 'node20',
+  main: 'dist/index.js'

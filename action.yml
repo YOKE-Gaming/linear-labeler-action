@@ -1,0 +1,19 @@
+name: "Linear Labeler"
+description: "GitHub Action to update Linear labels based on the branch name"
+inputs:
+  branchName:
+    required: true
+    description: "The name of the branch to add labels to"
+  labelNames:
+    required: true
+    description: "Comma-separated names of the labels to add to the ticket"
+  linearApiKey:
+    required: true
+    description: "Linear API key"
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.linearApiKey }}
+    - ${{ inputs.branchName }}
+    - ${{ inputs.labelNames }}

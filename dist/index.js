@@ -25735,12 +25735,13 @@ exports.addLabelToTicket = addLabelToTicket;
         throw new Error("Linear API key, branch name, and label names are required");
     }
     const client = new sdk_1.LinearClient({ apiKey: linearApiKey });
-    const ticketIdMatch = RegExp(/\(([^)]+)\)/).exec(branchName);
+    // Extract ticket ID from branch name (e.g. "nc-123" from "nc-123-abcd")
+    const ticketIdMatch = RegExp(/^([a-zA-Z]+-\d+)/).exec(branchName);
     if (!ticketIdMatch) {
-        throw new Error(`Could not find ticket ID in branch name: ${branchName}`);
+        throw new Error(`Could not extract ticket ID from branch name: ${branchName}`);
     }
     console.log(`Branch name: ${branchName}`);
-    const ticketId = ticketIdMatch[1].toUpperCase();
+    const ticketId = ticketIdMatch[0].toUpperCase();
     const labelNames = commaSeparatedLabelNames.split(",");
     await addLabelToTicket(client, { ticketId, labelNames });
 })();

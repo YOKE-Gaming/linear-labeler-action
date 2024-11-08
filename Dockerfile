@@ -12,10 +12,10 @@ COPY tsconfig.json ./
 RUN npm install
 
 # Copy source files from root
-COPY index.ts ./
+COPY src ./src
 
 # Install ts-node globally
 RUN npm install -g ts-node typescript
 
 # Set the entry point
-ENTRYPOINT ["ts-node", "index.ts"]
+ENTRYPOINT ["ts-node", "src/index.ts"]

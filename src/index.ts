@@ -74,7 +74,7 @@ export async function addLabelToTicket(client: LinearClient, {
   // Extract ticket ID from branch name (e.g. "nc-123" from "nc-123-abcd")
   const ticketIdMatch = RegExp(/^([a-zA-Z]+-\d+)/).exec(branchName.toString());
   console.log(`Ticket ID match: ${ticketIdMatch}`);
-  if (!ticketIdMatch) {
+  if (!ticketIdMatch?.length) {
     throw new Error(`Could not extract ticket ID from branch name: ${branchName}`);
   }
   

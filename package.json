@@ -2,7 +2,7 @@
   "name": "linear-labeler-action",
   "version": "1.0.0",
   "description": "Github Action to label issues in Linear",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc"
   },

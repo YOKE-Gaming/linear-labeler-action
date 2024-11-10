@@ -25674,8 +25674,64 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.addLabelToTicket = exports.getLabels = void 0;
+exports.run = void 0;
 const sdk_1 = __nccwpck_require__(5591);
+const core = __importStar(__nccwpck_require__(6847));
+const utils_1 = __nccwpck_require__(804);
+async function run() {
+    const linearApiKey = core.getInput("linearApiKey");
+    const branchName = core.getInput("branchName");
+    const commaSeparatedLabelNames = core.getInput("labelNames");
+    if (!linearApiKey || !branchName || !commaSeparatedLabelNames) {
+        throw new Error("Linear API key, branch name, and label names are required");
+    }
+    const client = new sdk_1.LinearClient({ apiKey: linearApiKey });
+    // Extract ticket ID from branch name (e.g. "nc-123" from "nc-123-abcd")
+    const ticketIdMatch = RegExp(/^([a-zA-Z]+-\d+)/).exec(branchName);
+    if (!ticketIdMatch) {
+        throw new Error(`Could not extract ticket ID from branch name: ${branchName}`);
+    }
+    core.info(`Branch name: ${branchName}`);
+    const ticketId = ticketIdMatch[0].toUpperCase();
+    const labelNames = commaSeparatedLabelNames.split(",");
+    await (0, utils_1.addLabelToTicket)(client, { ticketId, labelNames });
+}
+exports.run = run;
+run();
+
+
+/***/ }),
+
+/***/ 804:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.addLabelToTicket = void 0;
 const core = __importStar(__nccwpck_require__(6847));
 async function getLabels(client, labelNames) {
     try {
@@ -25692,27 +25748,26 @@ async function getLabels(client, labelNames) {
         throw new Error(`Failed to get label ${labelNames}`);
     }
 }
-exports.getLabels = getLabels;
-async function addLabelToTicket(client, { ticketId, labelNames, }) {
+async function addLabelToTicket(client, { ticketId, labelNames }) {
     try {
         // Get the existing issue
-        console.log(`Getting issue ${ticketId}...`);
+        core.info(`Getting issue ${ticketId}...`);
         const issue = await client.issue(ticketId);
         if (!issue) {
             throw new Error(`Issue ${ticketId} not found`);
         }
-        console.log(`Found issue ${issue.identifier}`);
+        core.info(`Found issue ${issue.identifier}`);
         const prettyLabelNames = labelNames.join(", ");
-        console.log(`Getting labels ${prettyLabelNames}...`);
+        core.info(`Getting labels ${prettyLabelNames}...`);
         const issueLabels = await getLabels(client, labelNames);
         const labelIds = issueLabels.map((label) => {
-            console.log(`Found label ${label.name}`);
+            core.info(`Found label ${label.name}`);
             return label.id;
         });
         if (labelIds.length !== labelNames.length) {
             throw new Error(`Labels ${prettyLabelNames} not found`);
         }
-        console.log(`Adding labels ${prettyLabelNames} to issue ${issue.identifier}...`);
+        core.info(`Adding labels ${prettyLabelNames} to issue ${issue.identifier}...`);
         // Get current labels and combine with new ones
         const currentLabelIds = issue.labelIds || [];
         const uniqueLabelIds = [...new Set([...currentLabelIds, ...labelIds])];
@@ -25720,31 +25775,13 @@ async function addLabelToTicket(client, { ticketId, labelNames, }) {
         await issue.update({
             labelIds: uniqueLabelIds,
         });
-        console.log(`Labels ${prettyLabelNames} added to issue ${issue.identifier}`);
+        core.info(`Labels ${prettyLabelNames} added to issue ${issue.identifier}`);
     }
     catch (error) {
         throw new Error(`Failed to add labels to ticket`);
     }
 }
 exports.addLabelToTicket = addLabelToTicket;
-(async () => {
-    const linearApiKey = core.getInput("linearApiKey");
-    const branchName = core.getInput("branchName");
-    const commaSeparatedLabelNames = core.getInput("labelNames");
-    if (!linearApiKey || !branchName || !commaSeparatedLabelNames) {
-        throw new Error("Linear API key, branch name, and label names are required");
-    }
-    const client = new sdk_1.LinearClient({ apiKey: linearApiKey });
-    // Extract ticket ID from branch name (e.g. "nc-123" from "nc-123-abcd")
-    const ticketIdMatch = RegExp(/^([a-zA-Z]+-\d+)/).exec(branchName);
-    if (!ticketIdMatch) {
-        throw new Error(`Could not extract ticket ID from branch name: ${branchName}`);
-    }
-    console.log(`Branch name: ${branchName}`);
-    const ticketId = ticketIdMatch[0].toUpperCase();
-    const labelNames = commaSeparatedLabelNames.split(",");
-    await addLabelToTicket(client, { ticketId, labelNames });
-})();
 
 
 /***/ }),
